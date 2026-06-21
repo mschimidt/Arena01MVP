@@ -1,9 +1,9 @@
 'use server';
 
-import { createClient } from '@/lib/supabase-server';
+import { getSupabaseServer } from '@/lib/supabase-server';
 
 export async function savePushSubscription(subscription: any) {
-  const supabase = createClient();
+  const supabase = await getSupabaseServer();
   const { data: { user }, error: userError } = await supabase.auth.getUser();
 
   if (userError || !user) {
