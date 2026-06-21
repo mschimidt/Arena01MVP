@@ -27,7 +27,7 @@ begin
   values (
     new.id,
     coalesce(new.raw_user_meta_data ->> 'nome', ''),
-    coalesce(new.phone, '')
+    coalesce(new.phone, new.raw_user_meta_data ->> 'telefone', '')
   );
   return new;
 end;
