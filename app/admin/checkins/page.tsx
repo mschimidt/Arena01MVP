@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/lib/supabase-admin';
 import Link from 'next/link';
 import { CheckCircle2, Clock, XCircle, Calendar, Users } from 'lucide-react';
+import CheckinsDatePicker from '@/components/CheckinsDatePicker';
 
 export default async function AdminCheckinsPage({
   searchParams,
@@ -86,20 +87,7 @@ export default async function AdminCheckinsPage({
         <Calendar size={18} color="var(--brand-lime)" />
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <label style={{ fontSize: '0.875rem', fontWeight: 600 }}>Data:</label>
-          <form method="GET">
-            <input
-              type="date"
-              name="data"
-              defaultValue={selectedDate}
-              className="form-input"
-              style={{ width: 'auto' }}
-              onChange={(e) => {
-                const url = new URL(window.location.href);
-                url.searchParams.set('data', e.target.value);
-                window.location.href = url.toString();
-              }}
-            />
-          </form>
+          <CheckinsDatePicker defaultValue={selectedDate} />
         </div>
         <span style={{ fontSize: '0.875rem', color: 'var(--text-muted)', textTransform: 'capitalize' }}>
           {new Date(selectedDate + 'T12:00:00').toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' })}
