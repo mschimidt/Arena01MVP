@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Inicializa o cliente do Supabase no Middleware usando cookies
+  // Inicializa o cliente do Supabase no Proxy usando cookies
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -53,11 +53,13 @@ export async function middleware(request: NextRequest) {
   // Se já estiver logado e tentar acessar a página de login
   if (user && path === '/login') {
     // Buscar perfil para redirecionamento inteligente
-    const { data: perfil } = await supabase
+    const { data: perfil, error: loginPerfilError } = await supabase
       .from('perfis')
       .select('role')
       .eq('id', user.id)
       .single();
+
+    console.log(`[Proxy Login Redirect Debug] User: ${user.email} | Role: ${perfil?.role} | Error:`, loginPerfilError);
 
     if (perfil) {
       if (perfil.role === 'admin') {
@@ -74,11 +76,13 @@ export async function middleware(request: NextRequest) {
   // Validação de Roles específicas
   if (user) {
     // Buscar perfil/role
-    const { data: perfil } = await supabase
+    const { data: perfil, error: perfilError } = await supabase
       .from('perfis')
       .select('role')
       .eq('id', user.id)
       .single();
+
+    console.log(`[Proxy Debug] Path: ${path} | User: ${user.email} | Role: ${perfil?.role} | QueryError:`, perfilError);
 
     if (perfil) {
       // 1. Aluno tentando acessar admin ou professor
