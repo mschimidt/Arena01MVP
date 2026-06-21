@@ -37,6 +37,28 @@ create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function public.handle_new_user();
 
+-- Helper function to check if the user is an admin without recursion
+create or replace function public.is_admin()
+returns boolean as $$
+begin
+  return coalesce(
+    (select role = 'admin' from public.perfis where id = auth.uid()),
+    false
+  );
+end;
+$$ language plpgsql security definer;
+
+-- Helper function to check if the user is a professor without recursion
+create or replace function public.is_professor()
+returns boolean as $$
+begin
+  return coalesce(
+    (select role = 'professor' from public.perfis where id = auth.uid()),
+    false
+  );
+end;
+$$ language plpgsql security definer;
+
 -- ================================================
 -- 2. QUADRAS
 -- ================================================
@@ -156,9 +178,7 @@ create policy "Perfis: usuário edita próprio perfil"
 create policy "Perfis: admin gerencia todos"
   on public.perfis for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Quadras
 alter table public.quadras enable row level security;
@@ -171,9 +191,7 @@ create policy "Quadras: leitura para autenticados"
 create policy "Quadras: admin gerencia"
   on public.quadras for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Aulas
 alter table public.aulas enable row level security;
@@ -186,9 +204,7 @@ create policy "Aulas: leitura para autenticados"
 create policy "Aulas: admin gerencia"
   on public.aulas for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Planos
 alter table public.planos enable row level security;
@@ -201,9 +217,7 @@ create policy "Planos: leitura para autenticados"
 create policy "Planos: admin gerencia"
   on public.planos for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Matrículas
 alter table public.matriculas enable row level security;
@@ -216,9 +230,7 @@ create policy "Matriculas: aluno vê as próprias"
 create policy "Matriculas: admin gerencia"
   on public.matriculas for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Checkins
 alter table public.checkins enable row level security;
@@ -261,9 +273,7 @@ create policy "Checkins: professor gerencia checkins das suas aulas"
 create policy "Checkins: admin gerencia"
   on public.checkins for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Pagamentos
 alter table public.pagamentos enable row level security;
@@ -276,9 +286,7 @@ create policy "Pagamentos: aluno vê os próprios"
 create policy "Pagamentos: admin gerencia"
   on public.pagamentos for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- Notificações
 alter table public.notificacoes enable row level security;
@@ -296,9 +304,7 @@ create policy "Notificacoes: usuário marca como lida"
 create policy "Notificacoes: admin gerencia"
   on public.notificacoes for all
   to authenticated
-  using (
-    exists (select 1 from public.perfis where id = auth.uid() and role = 'admin')
-  );
+  using (public.is_admin());
 
 -- ================================================
 -- DADOS SEED (iniciais)

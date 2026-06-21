@@ -27,9 +27,4 @@ CREATE POLICY "Alunos podem deletar suas subscriptions"
 -- Admins podem ver todas
 CREATE POLICY "Admins podem ver todas subscriptions"
     ON public.push_subscriptions FOR SELECT
-    USING (
-        EXISTS (
-            SELECT 1 FROM public.perfis
-            WHERE perfis.id = auth.uid() AND perfis.role = 'admin'
-        )
-    );
+    USING (public.is_admin());
