@@ -2,7 +2,8 @@ import { supabaseAdmin } from '@/lib/supabase-admin';
 import { getServerUser } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { LogOut, Users, Clock, Calendar, CheckSquare } from 'lucide-react';
+import LogoutButton from '@/components/LogoutButton';
+import { Users, Clock, Calendar, CheckSquare } from 'lucide-react';
 
 export default async function ProfessorAulasPage() {
   const user = await getServerUser();
@@ -85,11 +86,7 @@ export default async function ProfessorAulasPage() {
           <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)', fontWeight: 500 }}>
             Prof. {perfil.nome.split(' ')[0]}
           </span>
-          <form action="/login" method="GET">
-            <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)', padding: '4px 8px' }}>
-              <LogOut size={16} />
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </header>
 

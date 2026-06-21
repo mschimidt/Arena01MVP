@@ -4,7 +4,8 @@ import { redirect } from 'next/navigation';
 import Link from 'next/link';
 import AulaList from './AulaList';
 import PushOptIn from '@/components/PushOptIn';
-import { LogOut, Calendar, Award, User, Sparkles } from 'lucide-react';
+import LogoutButton from '@/components/LogoutButton';
+import { Calendar, Award, User, Sparkles } from 'lucide-react';
 
 export default async function AlunoAulasPage({
   searchParams,
@@ -121,11 +122,7 @@ export default async function AlunoAulasPage({
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
           <PushOptIn />
-          <form action="/login" method="GET">
-            <button className="btn btn-ghost btn-sm" style={{ color: 'var(--danger)', padding: '4px 8px' }}>
-              <LogOut size={16} />
-            </button>
-          </form>
+          <LogoutButton />
         </div>
       </header>
 
